@@ -11,3 +11,20 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+
+xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+
+bindkey -M viins "^W"   backward-kill-word
+bindkey -M viins "^A"   beginning-of-line
+bindkey -M viins "^E"   end-of-line
+bindkey -M viins "[B"   history-search-forward               # down arrow
+bindkey -M viins "[A"   history-search-backward              # up arrow
+bindkey -M viins "^R"   history-incremental-search-backward  # ctrl-r
+
+autoload -U bashcompinit && bashcompinit
+
+eval "$(register-python-argcomplete linsharecli)"
+eval "$(register-python-argcomplete linshareadmcli)"
+
+# Centieme de secondes
+export KEYTIMEOUT=10

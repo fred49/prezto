@@ -28,3 +28,4 @@ eval "$(register-python-argcomplete linshareadmcli)"
 
 # Centieme de secondes
 export KEYTIMEOUT=10
+alias tma="tmux att"

@@ -12,7 +12,7 @@ fi
 
 # Customize to your needs...
 
-xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+#xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
 
 bindkey -M viins "^W"   backward-kill-word
 bindkey -M viins "^A"   beginning-of-line
@@ -29,3 +29,18 @@ eval "$(register-python-argcomplete linshareadmcli)"
 # Centieme de secondes
 export KEYTIMEOUT=10
 alias tma="tmux att"
+
+alias cddev="cd /home/fred/virtualenvs"
+eval "$(register-python-argcomplete linsharecli)"
+eval "$(register-python-argcomplete argtoolboxtool)"
+export EDITOR=vim
+eval "$(register-python-argcomplete sample.py)"
+eval "$(register-python-argcomplete ./sample.py)"
+eval "$(register-python-argcomplete linshareadmcli)"
+eval "$(register-python-argcomplete ./svcdirectory.py)"
+eval "$(register-python-argcomplete svcdirectory.py)"
+source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+
+
+export TIMEFMT=$'\n%E real,\t%U user,\t%S sys'
+

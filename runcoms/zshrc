@@ -11,3 +11,61 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+if [ -f /usr/share/doc/pkgfile/command-not-found.zsh ] ; then
+    source /usr/share/doc/pkgfile/command-not-found.zsh
+fi
+
+if [ -f /usr/share/virtualenvwrapper/virtualenvwrapper.sh ] ; then
+    source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+fi
+
+if [ -f /usr/bin/register-python-argcomplete ] ; then
+    eval "$(register-python-argcomplete linsharecli)"
+    eval "$(register-python-argcomplete linshareadmcli)"
+    eval "$(register-python-argcomplete argtoolboxtool)"
+fi
+
+bindkey -M viins "^W"   backward-kill-word
+bindkey -M viins "^A"   beginning-of-line
+bindkey -M viins "^E"   end-of-line
+bindkey -M viins "[B"   history-search-forward               # down arrow
+bindkey -M viins "[A"   history-search-backward              # up arrow
+bindkey -M viins "^R"   history-incremental-search-backward  # ctrl-r
+
+
+alias tma="tmux att"
+
+
+
+precmd () {print -Pn "\e]0;%n@%m: %~\a"}
+
+function title ()
+{
+    export TITLE=$@
+    precmd () {print -Pn "\e]0; ${TITLE}\a"}
+}
+
+function mkkdir ()
+{
+    local dir=$1
+    mkdir -p ${dir}
+    cd ${dir}
+}
+
+function jcat ()
+{
+    cat $1 | python -m json.tool
+}
+
+autoload -U bashcompinit && bashcompinit
+
+# Centieme de secondes
+export KEYTIMEOUT=10
+
+# Configure time format
+export TIMEFMT=$'\n%E real,\t%U user,\t%S sys'
+export EDITOR=vim
+
+
+# Use very maj as escape key
+#xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'

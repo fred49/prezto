@@ -6,48 +6,103 @@
 #
 
 
+# zmodload zsh/zprof
+
 # Source Prezto.
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
-# Customize to your needs...
-if [ -f /usr/share/doc/pkgfile/command-not-found.zsh ] ; then
-    source /usr/share/doc/pkgfile/command-not-found.zsh
+#######################
+# Config
+#######################
+
+# https://www.johnhawthorn.com/2012/09/vi-escape-delays/
+# 10ms for key sequences
+# Centieme de secondes
+export KEYTIMEOUT=5
+
+# Configure time format
+export TIMEFMT=$'\n%E real,\t%U user,\t%S sys'
+export EDITOR=vim
+
+export HISTSIZE=10000000
+export SAVEHIST=10000000
+# setopt APPEND_HISTORY
+
+# setopt BANG_HIST                 # Treat the '!' character specially during expansion.
+setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
+setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
+# setopt SHARE_HISTORY             # Share history between all sessions.
+# setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
+setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded again.
+# setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
+setopt HIST_FIND_NO_DUPS         # Do not display a line previously found.
+setopt HIST_IGNORE_SPACE         # Don't record an entry starting with a space.
+# setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history file.
+setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
+# setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
+# setopt HIST_BEEP                 # Beep when accessing nonexistent history.
+
+
+
+
+#######################
+# autocomplete stuff
+#######################
+if type brew &>/dev/null
+then
+  FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+  autoload -Uz compinit
+  compinit
 fi
 
-if [ -f /usr/share/virtualenvwrapper/virtualenvwrapper.sh ] ; then
-    source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
-else
-    if [ -f /usr/bin/virtualenvwrapper.sh ] ; then
-        source /usr/bin/virtualenvwrapper.sh
-    fi
-fi
-
+# enable bash completion suppor for zsh.
 autoload -U bashcompinit && bashcompinit
 
+FILES_TO_SOURCE="
+/usr/share/doc/pkgfile/command-not-found.zsh
+$HOME/.config/broot/launcher/bash/br
+"
 
+for file_path in $(echo $FILES_TO_SOURCE | tr '\n' ' ')
+do
+    if [ -f ${file_path} ] ; then
+        source $file_path
+    fi
+done
+unset FILES_TO_SOURCE
+
+
+
+
+#######################
+# autocomplete
+#######################
 
 # Python autocomplete
 
 ## Python autocomplete - argparse/argcomplete
 
-which register-python-argcomplete &> /dev/null
-if [ $? -eq 0 ] ; then
-    eval "$(register-python-argcomplete linsharecli)"
-    eval "$(register-python-argcomplete linshareadmcli)"
-    eval "$(register-python-argcomplete argtoolboxtool)"
-fi
+# which register-python-argcomplete &> /dev/null
+# if [ $? -eq 0 ] ; then
+#     eval "$(register-python-argcomplete linsharecli)"
+#     eval "$(register-python-argcomplete linshareadmcli)"
+#     eval "$(register-python-argcomplete argtoolboxtool)"
+# fi
 
 ## Python autocomplete - click
 
 # https://click.palletsprojects.com/en/8.0.x/shell-completion/
-which gitt &> /dev/null
-if [ $? -eq 0 ] ; then
-    eval "$(_GITT_COMPLETE=source_zsh gitt)"
-fi
+# which gitt &> /dev/null
+# if [ $? -eq 0 ] ; then
+#     eval "$(_GITT_COMPLETE=source_zsh gitt)"
+# fi
+# 
 
-
+# bindkey -l will give you a list of existing keymap names.
+# bindkey -M <keymap> will list all the bindings in a given keymap.
+#
 bindkey -M viins "^W"   backward-kill-word
 bindkey -M viins "^A"   beginning-of-line
 bindkey -M viins "^E"   end-of-line
@@ -56,6 +111,9 @@ bindkey -M viins "[A"   history-search-backward              # up arrow
 bindkey -M viins "^R"   history-incremental-search-backward  # ctrl-r
 
 
+#######################
+# functions/helpers
+#######################
 ## Functions
 
 function decode_base64_url() {
@@ -84,7 +142,11 @@ function lk ()
     fi
     local file_path=$(readlink -f $@)
     echo "file path: $file_path"
-    echo -n $file_path | xclip -selection c
+    if [ "${PLATFORM}" = "Darwin" ] ; then
+        echo -n $file_path | pbcopy
+    else
+        echo -n $file_path | xclip -selection c
+    fi
 }
 
 function precmd () {print -Pn "\e]0;%n@%m: %~\a"}
@@ -102,17 +164,14 @@ function mkkdir ()
     cd ${dir}
 }
 
-function jcat ()
-{
-    cat $1 | python -m json.tool
-}
-
 function dbase64 ()
 {
     echo $(echo -n "$1" |base64 -d)
 }
 
-## Aliases
+#######################
+# Aliases
+#######################
 
 alias tma="tmux att"
 alias vim="vim -p"
@@ -121,6 +180,7 @@ alias bc="bc -l"
 
 alias lll='exa -lgh  --time-style full-iso  --git --group-directories-first -a'
 alias ll='exa -lgh  --time-style long-iso  --git --group-directories-first'
+alias lls='exa -lgh  --time-style long-iso  --git --group-directories-first'
 alias l="exa -lg"
 alias l='exa -lgh  --time-style long-iso  --git --group-directories-first  --git-ignore'
 
@@ -135,22 +195,11 @@ alias now='echo $(date "+%Y-%m-%d")'
 alias now2='echo $(date "+%Y%m%d%H%M%S")'
 
 # You may remove -c if you have color / ESC issues.
-alias rich="python -m rich.markdown -c -p -y "
-
-
-# https://www.johnhawthorn.com/2012/09/vi-escape-delays/
-# 10ms for key sequences
-# Centieme de secondes
-export KEYTIMEOUT=10
-
-# Configure time format
-export TIMEFMT=$'\n%E real,\t%U user,\t%S sys'
-export EDITOR=vim
-
-
-# Use very maj as escape key
-#xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
+# See glow instead
+# alias rich="python -m rich.markdown -c -p -y "
 
 if [ -f ~/.zshrc.local ] ; then
     source ~/.zshrc.local
 fi
+
+# zprof

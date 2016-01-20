@@ -1,0 +1,26 @@
+! xrdb -query
+! xrdb -merge ~/.Xresources
+! xterm -report-fonts
+! xterm -report-colors
+
+xterm*background: black
+xterm*foreground: lightgray
+XTerm*saveLines: 4096
+XTerm*scrollBar: true
+XTerm*scrollbar.width: 4
+xterm*rightScrollBar: True
+! XTerm.vt100.scrollbar.width: 0
+XTerm.scaleHeight: 1.01
+xterm*borderWidth: 0
+! XTerm*faceName: DejaVu Sans Mono
+XTerm*faceName: DejaVu Sans Mono for Powerline
+XTerm*faceSize: 11
+XTerm*renderFont: true
+XTerm*locale: true
+
+
+! XTerm.vt100.foreground: white
+! XTerm.vt100.background: black
+! XTerm.vt100.color0: rgb:28/28/28
+! ! ...
+! XTerm.vt100.color15: rgb:e4/e4/e4

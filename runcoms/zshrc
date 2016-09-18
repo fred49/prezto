@@ -77,3 +77,7 @@ fi
 if [[ -s "${HOME}/bin" ]]; then
     export PATH=${HOME}/bin:$PATH
 fi
+if [[ -d "${HOME}/virtualenvs" ]]; then
+    alias cddev="cd $HOME/virtualenvs"
+fi
+

@@ -73,3 +73,7 @@ export EDITOR=vim
 if [ -f ~/.zshrc.local ] ; then
     source ~/.zshrc.local
 fi 
+
+if [[ -s "${HOME}/bin" ]]; then
+    export PATH=${HOME}/bin:$PATH
+fi

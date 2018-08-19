@@ -21,7 +21,8 @@ fi
 
 autoload -U bashcompinit && bashcompinit
 
-if [ -f /usr/bin/register-python-argcomplete ] ; then
+which register-python-argcomplete &> /dev/null
+if [ $? -eq 0 ] ; then
     eval "$(register-python-argcomplete linsharecli)"
     eval "$(register-python-argcomplete linshareadmcli)"
     eval "$(register-python-argcomplete argtoolboxtool)"

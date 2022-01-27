@@ -5,6 +5,7 @@
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 
+
 # Source Prezto.
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
@@ -21,12 +22,25 @@ fi
 
 autoload -U bashcompinit && bashcompinit
 
+
+
+# Python autocomplete
+
+## Python autocomplete - argparse/argcomplete
+
 which register-python-argcomplete &> /dev/null
 if [ $? -eq 0 ] ; then
     eval "$(register-python-argcomplete linsharecli)"
     eval "$(register-python-argcomplete linshareadmcli)"
     eval "$(register-python-argcomplete argtoolboxtool)"
 fi
+
+## Python autocomplete - click
+
+# https://click.palletsprojects.com/en/8.0.x/shell-completion/
+eval "$(_GITT_COMPLETE=source_zsh gitt)"
+
+
 
 bindkey -M viins "^W"   backward-kill-word
 bindkey -M viins "^A"   beginning-of-line
@@ -36,11 +50,38 @@ bindkey -M viins "[A"   history-search-backward              # up arrow
 bindkey -M viins "^R"   history-incremental-search-backward  # ctrl-r
 
 
-alias tma="tmux att"
+## Functions
+
+function decode_base64_url() {
+  local len=$((${#1} % 4))
+  local result="$1"
+  if [ $len -eq 2 ]; then result="$1"'=='
+  elif [ $len -eq 3 ]; then result="$1"'='
+  fi
+  echo "$result" | tr '_-' '/+' | openssl enc -d -base64
+}
 
 
+function decode_jwt(){
+   decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq .
+}
 
-precmd () {print -Pn "\e]0;%n@%m: %~\a"}
+### workaround, lk seems to be already be defined.
+alias lk > /dev/null
+if [ $? -eq 0 ] ; then
+    unalias lk
+fi
+function lk ()
+{
+    if [ -z ${DISPLAY} ] ; then
+        export DISPLAY=:0.0
+    fi
+    local file_path=$(readlink -f $@)
+    echo "file path: $file_path"
+    echo -n $file_path | xclip -selection c
+}
+
+function precmd () {print -Pn "\e]0;%n@%m: %~\a"}
 
 function title ()
 {
@@ -60,6 +101,39 @@ function jcat ()
     cat $1 | python -m json.tool
 }
 
+function dbase64 ()
+{
+    echo $(echo -n "$1" |base64 -d)
+}
+
+## Aliases
+
+alias tma="tmux att"
+alias vim="vim -p"
+alias vi=vim
+alias bc="bc -l"
+
+alias lll='exa -lgh  --time-style full-iso  --git --group-directories-first -a'
+alias ll='exa -lgh  --time-style long-iso  --git --group-directories-first'
+alias l="exa -lg"
+alias l='exa -lgh  --time-style long-iso  --git --group-directories-first  --git-ignore'
+
+
+### Decode JWT header
+alias jwth="decode_jwt 1"
+
+### Decode JWT Payload
+alias jwtp="decode_jwt 2"
+
+alias now='echo $(date "+%Y-%m-%d")'
+alias now2='echo $(date "+%Y%m%d%H%M%S")'
+
+# You may remove -c if you have color / ESC issues.
+alias rich="python -m rich.markdown -c -p -y "
+
+
+# https://www.johnhawthorn.com/2012/09/vi-escape-delays/
+# 10ms for key sequences
 # Centieme de secondes
 export KEYTIMEOUT=10
 
@@ -73,12 +147,4 @@ export EDITOR=vim
 
 if [ -f ~/.zshrc.local ] ; then
     source ~/.zshrc.local
-fi 
-
-if [[ -s "${HOME}/bin" ]]; then
-    export PATH=${HOME}/bin:$PATH
 fi
-if [[ -d "${HOME}/virtualenvs" ]]; then
-    alias cddev="cd $HOME/virtualenvs"
-fi
-

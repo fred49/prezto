@@ -42,8 +42,10 @@ fi
 ## Python autocomplete - click
 
 # https://click.palletsprojects.com/en/8.0.x/shell-completion/
-eval "$(_GITT_COMPLETE=source_zsh gitt)"
-
+which gitt &> /dev/null
+if [ $? -eq 0 ] ; then
+    eval "$(_GITT_COMPLETE=source_zsh gitt)"
+fi
 
 
 bindkey -M viins "^W"   backward-kill-word

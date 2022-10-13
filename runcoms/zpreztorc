@@ -83,7 +83,15 @@ zstyle ':prezto:module:editor' key-bindings 'vi'
 #
 
 # Ignore submodules when they are 'dirty', 'untracked', 'all', or 'none'.
-zstyle ':prezto:module:git:status:ignore' submodules 'all'
+# zstyle ':prezto:module:git:status:ignore' submodules 'all'
+zstyle ':prezto:module:git:status:ignore' submodules 'none'
+zstyle ':prezto:module:git:alias' skip 'yes'
+zstyle ':prezto:module:git:info:context:subcontext' format 'string'
+zstyle -e ':prezto:module:git:info' verbose 'no'
+# zstyle -e ':prezto:module:git:info:untracked' format ''
+zstyle -e ':prezto:module:git:info:untracked' format ''
+zstyle ':prezto:module:git:info:untracked' format ''
+
 
 #
 # GNU Utility
@@ -135,7 +143,7 @@ zstyle ':prezto:module:git:status:ignore' submodules 'all'
 #
 
 # Set the keyword used by `mand` to open man pages in Dash.app
-# zstyle ':prezto:module:osx:man' dash-keyword 'manpages'
+zstyle ':prezto:module:osx:man' dash-keyword 'manpages'
 
 #
 # Pacman
@@ -153,6 +161,7 @@ zstyle ':prezto:module:git:status:ignore' submodules 'all'
 # Auto set to 'off' on dumb terminals.
 #zstyle ':prezto:module:prompt' theme 'giddie'
 # zstyle ':prezto:module:prompt' theme 'powerline'
+# zstyle ':prezto:module:prompt' theme 'giddie'
 zstyle ':prezto:module:prompt' theme 'sorin'
 
 # Set the working directory prompt display length.
@@ -197,7 +206,7 @@ zstyle ':prezto:module:prompt' theme 'sorin'
 
 # Set the SSH identities to load into the agent.
 # zstyle ':prezto:module:ssh:load' identities 'id_rsa' 'id_rsa2' 'id_github'
-zstyle ':prezto:module:ssh:load' identities 'id_rsa' 'sshgate/id_rsa' 'stash/id_rsa' 'backup/home-fmartin-dev/id_rsa' 'backup/home-fmartin/id_rsa'
+zstyle ':prezto:module:ssh:load' identities 'id_rsa'
 
 #
 # Syntax Highlighting

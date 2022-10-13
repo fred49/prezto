@@ -35,6 +35,8 @@ if [[ -z "$LANG" ]]; then
   export LANG='en_US.UTF-8'
 fi
 
+export PLATFORM=$(uname)
+
 #
 # Paths
 #
@@ -71,3 +73,68 @@ fi
 if [[ -z "$LESSOPEN" ]] && (( $#commands[(i)lesspipe(|.sh)] )); then
   export LESSOPEN="| /usr/bin/env $commands[(i)lesspipe(|.sh)] %s 2>&-"
 fi
+export PAGER='less --raw-control-chars -F -X'
+
+export PATH="$PATH:/Users/fred/Library/Application Support/JetBrains/Toolbox/scripts"
+export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="/opt/homebrew/opt/postgresql@15/bin:$PATH"
+# /opt/homebrew/Cellar/libpq/15.3_1/bin/
+
+
+if command -v brew > /dev/null 2>&1; then
+    eval $(brew shellenv)
+fi
+
+# rbenv
+if command -v rbenv > /dev/null 2>&1; then
+  eval "$(rbenv init -)";
+fi
+
+if [ "${PLATFORM}" = "Darwin" ] ; then
+    export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+fi
+
+# # nvm
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+# [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+nvm() {
+  echo "🚨 NVM not loaded! Loading now..."
+  unset -f nvm
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+  nvm "$@"
+}
+
+
+export GPG_TTY=$(tty)
+
+if [ ! -z $(which virtualenvwrapper.sh) ] ; then
+    source virtualenvwrapper.sh
+elif [ -f /usr/share/virtualenvwrapper/virtualenvwrapper.sh ] ; then
+    source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+elif [ -f /usr/bin/virtualenvwrapper.sh ] ; then
+    source /usr/bin/virtualenvwrapper.sh
+fi
+
+##
+# Your previous /Users/fred/.zprofile file was backed up as /Users/fred/.zprofile.macports-saved_2023-06-12_at_13:49:15
+##
+
+# MacPorts Installer addition on 2023-06-12_at_13:49:15: adding an appropriate MANPATH variable for use with MacPorts.
+export MANPATH="/opt/local/share/man:$MANPATH"
+# Finished adapting your MANPATH environment variable for use with MacPorts.
+
+
+# Hook :D
+function  ggshield() {
+# brew install gitguardian/tap/ggshield || pip install ggshield
+# ggshield config set instance https://gitguardian.doctolib.net
+# ggshield auth login
+# for kube repo: IGNORE_GGSHIELD_HOOK
+# for doctolib repo: SKIP_GGSHIELD
+}
+

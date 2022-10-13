@@ -1,4 +1,4 @@
-#
+# vim:syntax=zsh tabstop=4 expandtab shiftwidth=4 softtabstop=4
 # Executes commands at the start of an interactive session.
 #
 # Authors:
@@ -79,27 +79,6 @@ unset FILES_TO_SOURCE
 #######################
 # autocomplete
 #######################
-
-# Python autocomplete
-
-## Python autocomplete - argparse/argcomplete
-
-# which register-python-argcomplete &> /dev/null
-# if [ $? -eq 0 ] ; then
-#     eval "$(register-python-argcomplete linsharecli)"
-#     eval "$(register-python-argcomplete linshareadmcli)"
-#     eval "$(register-python-argcomplete argtoolboxtool)"
-# fi
-
-## Python autocomplete - click
-
-# https://click.palletsprojects.com/en/8.0.x/shell-completion/
-# which gitt &> /dev/null
-# if [ $? -eq 0 ] ; then
-#     eval "$(_GITT_COMPLETE=source_zsh gitt)"
-# fi
-# 
-
 # bindkey -l will give you a list of existing keymap names.
 # bindkey -M <keymap> will list all the bindings in a given keymap.
 #
@@ -135,6 +114,7 @@ alias lk > /dev/null
 if [ $? -eq 0 ] ; then
     unalias lk
 fi
+
 function lk ()
 {
     if [ -z ${DISPLAY} ] ; then
@@ -148,6 +128,7 @@ function lk ()
         echo -n $file_path | xclip -selection c
     fi
 }
+
 
 function precmd () {print -Pn "\e]0;%n@%m: %~\a"}
 
@@ -166,13 +147,12 @@ function mkkdir ()
 
 function dbase64 ()
 {
-    echo $(echo -n "$1" |base64 -d)
+    echo -n "$1" |base64 -d
 }
 
 #######################
 # Aliases
 #######################
-
 alias tma="tmux att"
 alias vim="vim -p"
 alias vi=vim

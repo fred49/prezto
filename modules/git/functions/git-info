@@ -183,6 +183,17 @@ function git-info {
   local untracked_format
   local untracked_formatted
 
+
+  function init_measure() {
+    l_start_tsp=$(gdate +%s.%N)
+    l_title_tsp=$@
+  }
+
+  function measure() {
+    l_end_tsp=$(gdate +%s.%N)
+    echo ${l_title_tsp} $((${l_end_tsp}-${l_start_tsp})) 1>&2
+  }
+
   # Clean up previous $git_info.
   unset git_info
   typeset -gA git_info
@@ -301,7 +312,8 @@ function git-info {
   fi
 
   # Get status type.
-  if ! zstyle -t ':prezto:module:git:info' verbose; then
+  if true ; then
+  # if ! zstyle -t ':prezto:module:git:info' verbose; then
     # Format indexed.
     zstyle -s ':prezto:module:git:info:indexed' format 'indexed_format'
     if [[ -n "$indexed_format" ]]; then
@@ -341,20 +353,24 @@ function git-info {
     fi
 
     # Format untracked.
-    zstyle -s ':prezto:module:git:info:untracked' format 'untracked_format'
-    if [[ -n "$untracked_format" ]]; then
-      ((
-        untracked+=$(
-          command git ls-files \
-            --other \
-            --exclude-standard \
-            2> /dev/null \
-          | wc -l
-        )
-      ))
-      if (( untracked > 0 )); then
-        zformat -f untracked_formatted "$untracked_format" "u:$untracked"
+    if [ -z $FMA_NOT_GIT_FOR_ZSH ] ; then
+      init_measure status
+      zstyle -s ':prezto:module:git:info:untracked' format 'untracked_format'
+      if [[ -n "$untracked_format" ]]; then
+        ((
+          untracked+=$(
+            command git ls-files \
+              --other \
+              --exclude-standard \
+              2> /dev/null \
+            | wc -l
+          )
+        ))
+        if (( untracked > 0 )); then
+          zformat -f untracked_formatted "$untracked_format" "u:$untracked"
+        fi
       fi
+      measure
     fi
 
     (( dirty = indexed + unindexed + untracked ))
@@ -455,5 +471,5 @@ function git-info {
 
   return 0
 }
-
+echo -n $(date '+%H::%M:%S')
 git-info "$@"

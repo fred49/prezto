@@ -49,6 +49,8 @@ if [ $? -eq 0 ] ; then
 fi
 
 
+# bindkey -l will give you a list of existing keymap names.
+# bindkey -M <keymap> will list all the bindings in a given keymap.
 bindkey -M viins "^W"   backward-kill-word
 bindkey -M viins "^A"   beginning-of-line
 bindkey -M viins "^E"   end-of-line
@@ -122,6 +124,7 @@ alias bc="bc -l"
 
 alias lll='exa -lgh  --time-style full-iso  --git --group-directories-first -a'
 alias ll='exa -lgh  --time-style long-iso  --git --group-directories-first'
+alias lls='exa -lgh  --time-style long-iso  --git --group-directories-first'
 alias l="exa -lg"
 alias l='exa -lgh  --time-style long-iso  --git --group-directories-first  --git-ignore'
 
@@ -137,6 +140,7 @@ alias now2='echo $(date "+%Y%m%d%H%M%S")'
 
 # You may remove -c if you have color / ESC issues.
 alias rich="python -m rich.markdown -c -p -y "
+# See glow instead
 
 
 # https://www.johnhawthorn.com/2012/09/vi-escape-delays/

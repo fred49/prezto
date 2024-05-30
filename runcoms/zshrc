@@ -152,6 +152,84 @@ export KEYTIMEOUT=10
 export TIMEFMT=$'\n%E real,\t%U user,\t%S sys'
 export EDITOR=vim
 
+function countdown() {
+  secs=$1
+  shift
+  msg=$@
+  while [ $secs -gt 0 ]
+  do
+    printf "\r\033[KWaiting %.d seconds $msg" $((secs--))
+    sleep 1
+  done
+  echo
+}
+
+
+function toenvvar () {
+	if [ -t 0 ]; then
+		echo $@ | sed -e 's/[.|-]/_/g' | tr '[:lower:]' '[:upper:]'
+	else
+	    while read -r line ; do
+		echo $line | sed -e 's/[.|-]/_/g' | tr '[:lower:]' '[:upper:]'
+	    done
+	fi
+}
+
+function tobulletlist () {
+	if [ -t 0 ]; then
+		echo "Not supported. Use it with a pipe."
+		echo "First argument: number of lines to display. unlimited=0."
+		echo "Second argument: padding spaces. Default=1"
+        return 1
+	else
+        local cpt=0
+        local l_limit=0
+        local l_padding=1
+        local l_prefix=""
+
+        if [ ! -z $1 ] ; then
+            if [  $1 -ge 1 ] ; then
+                l_limit=$1
+            fi
+        fi
+        if [ ! -z $2 ] ; then
+            if [  $2 -ge 1 ] ; then
+                l_padding=$2
+            fi
+        fi
+
+        local i=0
+        until [ $i -gt ${l_padding} ]
+        do
+            l_prefix=" ${l_prefix}"
+            ((i=i+1))
+        done
+
+	    while read -r line ; do
+            cpt=$((cpt+1))
+            echo ${line} | head -n 4 | sed -e 's/^/'${l_prefix}'- &/g'
+            if [ $cpt -eq $l_limit ] ; then
+                break
+            fi
+	    done
+	fi
+}
+
+function pretty_display_number()
+{
+    LC_ALL=en_US.UTF-8 ; printf "%'.d\n" $@
+}
+
+function envv ()
+{
+    local env_data=$(env)
+    env_data=$(echo $env_data | sed -r -e 's/(.*PASSWORD.*)=(.*)/\1=xxxxx/')
+    env_data=$(echo $env_data | sed -r -e 's/(.*TOKEN.*)=(.*)/\1=xxxxx/')
+    env_data=$(echo $env_data | sed -r -e 's/([A-Z_0-9a-z]*TOKEN[A-Z_0-9a-z]*)=(.*)/\1=xxxxx/')
+    env_data=$(echo $env_data | sed -r -e 's/([A-Z_0-9a-z]*ACCESS_KEY[A-Z_0-9a-z]*)=(.*)/\1=xxxxx/')
+    env_data=$(echo $env_data | sed -r -e 's/([A-Z_0-9a-z]*SECRET_ACCESS[A-Z_0-9a-z]*)=(.*)/\1=xxxxx/')
+    echo $env_data
+}
 
 # Use very maj as escape key
 #xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'

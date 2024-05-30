@@ -109,7 +109,7 @@ function jcat ()
 
 function dbase64 ()
 {
-    echo $(echo -n "$1" |base64 -d)
+    echo -n "$1" |base64 -d
 }
 
 ## Aliases

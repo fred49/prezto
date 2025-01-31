@@ -137,6 +137,8 @@ alias jwtp="decode_jwt 2"
 
 alias now='echo $(date "+%Y-%m-%d")'
 alias now2='echo $(date "+%Y%m%d%H%M%S")'
+alias now3='echo $(date "+%H:%M:%S")'
+
 
 # You may remove -c if you have color / ESC issues.
 alias rich="python -m rich.markdown -c -p -y "

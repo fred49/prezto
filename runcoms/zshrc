@@ -36,7 +36,11 @@ bindkey -M viins "^A"   beginning-of-line
 bindkey -M viins "^E"   end-of-line
 bindkey -M viins "[B"   history-search-forward               # down arrow
 bindkey -M viins "[A"   history-search-backward              # up arrow
-bindkey -M viins "^R"   history-incremental-search-backward  # ctrl-r
+
+if ! zstyle -t ":prezto:module:fzf" loaded 'yes' 'no'; then
+	# already defined bu fzf module, redefining breaks fzf binding
+  bindkey -M viins "^R"   history-incremental-search-backward  # ctrl-r
+fi
 #####################
 
 

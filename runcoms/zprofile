@@ -71,3 +71,10 @@ fi
 if [[ -z "$LESSOPEN" ]] && (( $#commands[(i)lesspipe(|.sh)] )); then
   export LESSOPEN="| /usr/bin/env $commands[(i)lesspipe(|.sh)] %s 2>&-"
 fi
+
+
+export ZSHRC_DEBUG=0
+
+if [ -f ~/.zprofile.local ] ; then
+  source ~/.zprofile.local
+fi

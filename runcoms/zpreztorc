@@ -16,7 +16,7 @@
 zstyle ':prezto:*:*' color 'yes'
 
 # Add additional directories to load prezto modules from
-# zstyle ':prezto:load' pmodule-dirs $HOME/.zprezto-contrib
+zstyle ':prezto:load' pmodule-dirs $HOME/.zprezto-contrib
 
 # Allow module overrides when pmodule-dirs causes module name collisions
 # zstyle ':prezto:load' pmodule-allow-overrides 'yes'
@@ -46,6 +46,13 @@ zstyle ':prezto:load' pmodule \
   'history-substring-search' \
   'autosuggestions' \
   'prompt'
+
+function append_module_to_prezto_load (){
+    zstyle -g existing_modules ':prezto:load' pmodule
+    zstyle ':prezto:load' pmodule $existing_modules "$@"
+    unset existing_modules
+}
+
 
 #
 # Autosuggestions
@@ -173,6 +180,7 @@ zstyle ':prezto:module:prompt' theme 'sorin'
 
 # Automatically initialize virtualenvwrapper if pre-requisites are met.
 # zstyle ':prezto:module:python:virtualenv' initialize 'yes'
+zstyle ':prezto:module:python:virtualenv' initialize 'no'
 
 #
 # Ruby
@@ -196,7 +204,6 @@ zstyle ':prezto:module:prompt' theme 'sorin'
 #
 
 # Set the SSH identities to load into the agent.
-# zstyle ':prezto:module:ssh:load' identities 'id_rsa' 'id_rsa2' 'id_github'
 zstyle ':prezto:module:ssh:load' identities 'id_rsa'
 
 #
@@ -263,3 +270,10 @@ zstyle ':prezto:module:ssh:load' identities 'id_rsa'
 # before deleting or overwriting files. Set to 'no' to disable this safer
 # behavior.
 # zstyle ':prezto:module:utility' safe-ops 'yes'
+
+
+zstyle ':prezto:module:git:alias' skip true
+
+if [ -f ~/.zpreztorc.local ] ; then
+  source ~/.zpreztorc.local
+fi

@@ -17,3 +17,6 @@ SAYINGS=(
 echo $SAYINGS[$(($RANDOM % $#SAYINGS + 1))]
 
 } >&2
+if [ -f ~/.zlogout.local ] ; then
+  source ~/.zlogout.local
+fi

@@ -27,3 +27,6 @@ if [[ -o INTERACTIVE && -t 2 ]]; then
   fi
 
 fi >&2
+if [ -f ~/.zlogin.local ] ; then
+  source ~/.zlogin.local
+fi

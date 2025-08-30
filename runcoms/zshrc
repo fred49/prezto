@@ -6,48 +6,28 @@
 #   Sorin Ionescu <sorin.ionescu@gmail.com>
 #
 
+if [ "${ZSHRC_DEBUG}" -eq 1 ]; then
+    zmodload zsh/zprof
+fi
 
 # Source Prezto.
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
+
 # Customize to your needs...
-if [ -f /usr/share/doc/pkgfile/command-not-found.zsh ] ; then
-    source /usr/share/doc/pkgfile/command-not-found.zsh
-fi
 
-if [ -f /usr/share/virtualenvwrapper/virtualenvwrapper.sh ] ; then
-    source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
-else
-    if [ -f /usr/bin/virtualenvwrapper.sh ] ; then
-        source /usr/bin/virtualenvwrapper.sh
-    fi
-fi
+# Enable support of bash autocomplete functions in zsh.
+# autoload -U bashcompinit && bashcompinit
 
-autoload -U bashcompinit && bashcompinit
+#####################
+# zsh keybinding
+#####################
 
-
-
-# Python autocomplete
-
-## Python autocomplete - argparse/argcomplete
-
-which register-python-argcomplete &> /dev/null
-if [ $? -eq 0 ] ; then
-    eval "$(register-python-argcomplete linsharecli)"
-    eval "$(register-python-argcomplete linshareadmcli)"
-    eval "$(register-python-argcomplete argtoolboxtool)"
-fi
-
-## Python autocomplete - click
-
-# https://click.palletsprojects.com/en/8.0.x/shell-completion/
-which gitt &> /dev/null
-if [ $? -eq 0 ] ; then
-    eval "$(_GITT_COMPLETE=source_zsh gitt)"
-fi
-
+# bindkey → zsh’s way to map keys to widgets (functions that operate on the command line).
+# viins = vi insert mode
+# vicmd = normal mode
 
 # bindkey -l will give you a list of existing keymap names.
 # bindkey -M <keymap> will list all the bindings in a given keymap.
@@ -57,38 +37,8 @@ bindkey -M viins "^E"   end-of-line
 bindkey -M viins "[B"   history-search-forward               # down arrow
 bindkey -M viins "[A"   history-search-backward              # up arrow
 bindkey -M viins "^R"   history-incremental-search-backward  # ctrl-r
+#####################
 
-
-## Functions
-
-function decode_base64_url() {
-  local len=$((${#1} % 4))
-  local result="$1"
-  if [ $len -eq 2 ]; then result="$1"'=='
-  elif [ $len -eq 3 ]; then result="$1"'='
-  fi
-  echo "$result" | tr '_-' '/+' | openssl enc -d -base64
-}
-
-
-function decode_jwt(){
-   decode_base64_url $(echo -n $2 | cut -d "." -f $1) | jq .
-}
-
-### workaround, lk seems to be already be defined.
-alias lk > /dev/null
-if [ $? -eq 0 ] ; then
-    unalias lk
-fi
-function lk ()
-{
-    if [ -z ${DISPLAY} ] ; then
-        export DISPLAY=:0.0
-    fi
-    local file_path=$(readlink -f $@)
-    echo "file path: $file_path"
-    echo -n $file_path | xclip -selection c
-}
 
 function precmd () {print -Pn "\e]0;%n@%m: %~\a"}
 
@@ -103,11 +53,6 @@ function mkkdir ()
     local dir=$1
     mkdir -p ${dir}
     cd ${dir}
-}
-
-function jcat ()
-{
-    cat $1 | python -m json.tool
 }
 
 function dbase64 ()
@@ -128,21 +73,9 @@ alias lls='exa -lgh  --time-style long-iso  --git --group-directories-first'
 alias l="exa -lg"
 alias l='exa -lgh  --time-style long-iso  --git --group-directories-first  --git-ignore'
 
-
-### Decode JWT header
-alias jwth="decode_jwt 1"
-
-### Decode JWT Payload
-alias jwtp="decode_jwt 2"
-
 alias now='echo $(date "+%Y-%m-%d")'
 alias now2='echo $(date "+%Y%m%d%H%M%S")'
 alias now3='echo $(date "+%H:%M:%S")'
-
-
-# You may remove -c if you have color / ESC issues.
-alias rich="python -m rich.markdown -c -p -y "
-# See glow instead
 
 
 # https://www.johnhawthorn.com/2012/09/vi-escape-delays/
@@ -152,90 +85,18 @@ export KEYTIMEOUT=10
 
 # Configure time format
 export TIMEFMT=$'\n%E real,\t%U user,\t%S sys'
-export EDITOR=vim
-
-function countdown() {
-  secs=$1
-  shift
-  msg=$@
-  while [ $secs -gt 0 ]
-  do
-    printf "\r\033[KWaiting %.d seconds $msg" $((secs--))
-    sleep 1
-  done
-  echo
-}
-
-
-function toenvvar () {
-	if [ -t 0 ]; then
-		echo $@ | sed -e 's/[.|-]/_/g' | tr '[:lower:]' '[:upper:]'
-	else
-	    while read -r line ; do
-		echo $line | sed -e 's/[.|-]/_/g' | tr '[:lower:]' '[:upper:]'
-	    done
-	fi
-}
-
-function tobulletlist () {
-	if [ -t 0 ]; then
-		echo "Not supported. Use it with a pipe."
-		echo "First argument: number of lines to display. unlimited=0."
-		echo "Second argument: padding spaces. Default=1"
-        return 1
-	else
-        local cpt=0
-        local l_limit=0
-        local l_padding=1
-        local l_prefix=""
-
-        if [ ! -z $1 ] ; then
-            if [  $1 -ge 1 ] ; then
-                l_limit=$1
-            fi
-        fi
-        if [ ! -z $2 ] ; then
-            if [  $2 -ge 1 ] ; then
-                l_padding=$2
-            fi
-        fi
-
-        local i=0
-        until [ $i -gt ${l_padding} ]
-        do
-            l_prefix=" ${l_prefix}"
-            ((i=i+1))
-        done
-
-	    while read -r line ; do
-            cpt=$((cpt+1))
-            echo ${line} | head -n 4 | sed -e 's/^/'${l_prefix}'- &/g'
-            if [ $cpt -eq $l_limit ] ; then
-                break
-            fi
-	    done
-	fi
-}
 
 function pretty_display_number()
 {
     LC_ALL=en_US.UTF-8 ; printf "%'.d\n" $@
 }
 
-function envv ()
-{
-    local env_data=$(env)
-    env_data=$(echo $env_data | sed -r -e 's/(.*PASSWORD.*)=(.*)/\1=xxxxx/')
-    env_data=$(echo $env_data | sed -r -e 's/(.*TOKEN.*)=(.*)/\1=xxxxx/')
-    env_data=$(echo $env_data | sed -r -e 's/([A-Z_0-9a-z]*TOKEN[A-Z_0-9a-z]*)=(.*)/\1=xxxxx/')
-    env_data=$(echo $env_data | sed -r -e 's/([A-Z_0-9a-z]*ACCESS_KEY[A-Z_0-9a-z]*)=(.*)/\1=xxxxx/')
-    env_data=$(echo $env_data | sed -r -e 's/([A-Z_0-9a-z]*SECRET_ACCESS[A-Z_0-9a-z]*)=(.*)/\1=xxxxx/')
-    echo $env_data
-}
-
-# Use very maj as escape key
-#xmodmap -e 'clear Lock' -e 'keycode 0x42 = Escape'
-
+if [ -f ~/.zshrc.extra ] ; then
+    source ~/.zshrc.extra
+fi
 if [ -f ~/.zshrc.local ] ; then
     source ~/.zshrc.local
+fi
+if [ "${ZSHRC_DEBUG}" -eq 1 ]; then
+    zprof
 fi
